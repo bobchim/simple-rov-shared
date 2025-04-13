@@ -4,6 +4,8 @@ Last Updated:             2025-04-10
 Submit pull request to:   Bob - bobchim@protonmail.com
 */
 
+// this code is written and tested on arduino mega pro.
+
 #include "CRC.h"
 
 #define DEBUG true
@@ -20,6 +22,8 @@ uint32_t crc_rx, crc_rx_calc, crc_tx_calc;
 
 static int tx_min = -128;
 static int tx_max = 127;
+static int joystick_min = 0;
+static int joystick_max = 1023;
 
 unsigned long t0 = 0;
 unsigned long dt = 100;   // loop "delay" time
@@ -34,13 +38,13 @@ void loop() {
     t0 = millis();
 
     // Joystick
-    TXdata[0] = joystick_response(2, 0, 1023, tx_min, tx_max, 10);  // x, forward positive
-    TXdata[1] = joystick_response(3, 0, 1023, tx_min, tx_max, 10);  // y, right positive
-    TXdata[2] = joystick_response(4, 0, 1023, tx_min, tx_max, 10);  // z, up positive
-    TXdata[3] = joystick_response(5, 0, 1023, tx_min, tx_max, 10);  // roll
-    TXdata[4] = joystick_response(6, 0, 1023, tx_min, tx_max, 10);  // pitch
-    TXdata[5] = joystick_response(7, 0, 1023, tx_min, tx_max, 10);  // yaw
-    TXdata[6] = joystick_response(8, 0, 1023, tx_min, tx_max, 0);   // claw
+    TXdata[0] = joystick_response(2, joystick_min, joystick_max, tx_min, tx_max, 10);  // x, forward positive
+    TXdata[1] = joystick_response(3, joystick_min, joystick_max, tx_min, tx_max, 10);  // y, right positive
+    TXdata[2] = joystick_response(4, joystick_min, joystick_max, tx_min, tx_max, 10);  // z, up positive
+    TXdata[3] = joystick_response(5, joystick_min, joystick_max, tx_min, tx_max, 10);  // roll
+    TXdata[4] = joystick_response(6, joystick_min, joystick_max, tx_min, tx_max, 10);  // pitch
+    TXdata[5] = joystick_response(7, joystick_min, joystick_max, tx_min, tx_max, 10);  // yaw
+    TXdata[6] = joystick_response(8, joystick_min, joystick_max, tx_min, tx_max, 0);   // claw
 
     // Preview TX data
     Serial.print("TX: ");

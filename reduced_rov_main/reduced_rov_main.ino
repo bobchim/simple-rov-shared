@@ -4,6 +4,8 @@ Last Updated:             2025-04-10
 Submit pull request to:   Bob - bobchim@protonmail.com
 */
 
+// this code is written and tested on arduino mega pro
+
 #include "CRC.h"
 #include "motor.h"
 #include "propulsion_system.h"
@@ -30,6 +32,7 @@ unsigned long t1 = 0;
 unsigned long dt = 100;   // loop "delay" time
 unsigned long ts = 2000;  // no signal wait time
 
+// Set pin number for thrusters
 Motor thrusters[] = {
   Motor(2, rx_min, rx_max, pwm_min, pwm_max, 1),  // hfl
   Motor(3, rx_min, rx_max, pwm_min, pwm_max, 1),  // hfr
@@ -41,12 +44,13 @@ Motor thrusters[] = {
   Motor(9, rx_min, rx_max, pwm_min, pwm_max, 1)   // vrr
 };
 
+// Set pin number for servos
 Motor servos[] = {
   Motor(10, rx_min, rx_max, pwm_min, pwm_max, 0),
 };
 
-// Define thrust vectors in rov frame
-// 45 degree motor config
+// Define thrust vectors in rov frame for 45 degree motor config
+// length of thrust vectors == number of thrusters
 int x_dir[] = { 1, 1, 1, 1, 0, 0, 0, 0 };
 int y_dir[] = { 1, -1, -1, 1, 0, 0, 0, 0 };
 int z_dir[] = { 0, 0, 0, 0, -1, -1, -1, -1 };
@@ -63,9 +67,6 @@ void setup() {
   // Attach pins
   propsys.Attach();
   servos[0].Attach();
-
-  t0 = millis();
-  t1 = millis();
 }
 
 void loop() {
