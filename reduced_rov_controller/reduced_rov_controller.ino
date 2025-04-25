@@ -31,6 +31,8 @@ unsigned long dt = 100;   // loop "delay" time
 void setup() {
   Serial.begin(115200);  // USB
   Serial3.begin(57600);  // arduino to arduino
+  pinMode(2, INPUT_PULLUP);
+  pinMode(3, INPUT_PULLUP);
 }
 
 void loop() {
@@ -41,10 +43,10 @@ void loop() {
     TXdata[0] = joystick_response(2, joystick_min, joystick_max, tx_min, tx_max, 10);  // x, forward positive
     TXdata[1] = joystick_response(3, joystick_min, joystick_max, tx_min, tx_max, 10);  // y, right positive
     TXdata[2] = joystick_response(4, joystick_min, joystick_max, tx_min, tx_max, 10);  // z, up positive
-    TXdata[3] = joystick_response(5, joystick_min, joystick_max, tx_min, tx_max, 10);  // roll
-    TXdata[4] = joystick_response(6, joystick_min, joystick_max, tx_min, tx_max, 10);  // pitch
-    TXdata[5] = joystick_response(7, joystick_min, joystick_max, tx_min, tx_max, 10);  // yaw
-    TXdata[6] = joystick_response(8, joystick_min, joystick_max, tx_min, tx_max, 0);   // claw
+    TXdata[3] = joystick_response(5, joystick_min, joystick_max, tx_min, tx_max, 10);  // yaw
+    TXdata[4] = joystick_response(7, joystick_min, joystick_max, tx_min, tx_max, 10);  // claw
+    TXdata[5] = !digitalRead(2);  // left joystick sw
+    TXdata[6] = !digitalRead(3);  // right joystick sw
 
     // Preview TX data
     Serial.print("TX: ");

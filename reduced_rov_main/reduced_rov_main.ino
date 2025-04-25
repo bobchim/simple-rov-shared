@@ -34,31 +34,31 @@ unsigned long ts = 2000;  // no signal wait time
 
 // Set pin number for thrusters
 Motor thrusters[] = {
-  Motor(2, rx_min, rx_max, pwm_min, pwm_max, 1),  // hfl
-  Motor(3, rx_min, rx_max, pwm_min, pwm_max, 1),  // hfr
-  Motor(4, rx_min, rx_max, pwm_min, pwm_max, 1),  // hrl
-  Motor(5, rx_min, rx_max, pwm_min, pwm_max, 1),  // hrr
-  Motor(6, rx_min, rx_max, pwm_min, pwm_max, 1),  // vfl
-  Motor(7, rx_min, rx_max, pwm_min, pwm_max, 1),  // vfr
-  Motor(8, rx_min, rx_max, pwm_min, pwm_max, 1),  // vrl
-  Motor(9, rx_min, rx_max, pwm_min, pwm_max, 1)   // vrr
+  Motor(2, rx_min, rx_max, pwm_min, pwm_max, 1),  // vfl
+  Motor(3, rx_min, rx_max, pwm_min, pwm_max, 1),  // vfr
+  Motor(4, rx_min, rx_max, pwm_min, pwm_max, 1),  // vrl
+  Motor(5, rx_min, rx_max, pwm_min, pwm_max, 1),  // vrr
+  Motor(6, rx_min, rx_max, pwm_min, pwm_max, 1),  // hl
+  Motor(7, rx_min, rx_max, pwm_min, pwm_max, 1),  // hr
+  Motor(8, rx_min, rx_max, pwm_min, pwm_max, 1),  // hs
 };
 
 // Set pin number for servos
 Motor servos[] = {
-  Motor(10, rx_min, rx_max, pwm_min, pwm_max, 0),
+  Motor(9, rx_min, rx_max, pwm_min, pwm_max, 0),
 };
 
 // Define thrust vectors in rov frame for 45 degree motor config
 // length of thrust vectors == number of thrusters
-int x_dir[] = { 1, 1, 1, 1, 0, 0, 0, 0 };
-int y_dir[] = { 1, -1, -1, 1, 0, 0, 0, 0 };
-int z_dir[] = { 0, 0, 0, 0, -1, -1, -1, -1 };
-int roll_dir[] = { 0, 0, 0, 0, 1, -1, 1, -1 };
-int pitch_dir[] = { 0, 0, 0, 0, -1, -1, 1, 1 };
-int yaw_dir[] = { 1, -1, 1, -1, 0, 0, 0, 0 };
+int x_dir[] = { 0, 0, 0, 0, 1, 1, 0 };
 
-PropulsionSystem propsys(8, thrusters, x_dir, y_dir, z_dir, roll_dir, pitch_dir, yaw_dir);
+int y_dir[] = { 0, 0, 0, 0, 0, 0, -1 };
+int z_dir[] = { 1, 1, 1, 1, 0, 0, 0 };
+int roll_dir[] = { 1, -1, 1, -1, 0, 0, 0 };
+int pitch_dir[] = { 1, 1, -1, -1, 0, 0, 0 };
+int yaw_dir[] = { 0, 0, 0, 0, -1, 1, 0 };
+
+PropulsionSystem propsys(7, thrusters, x_dir, y_dir, z_dir, roll_dir, pitch_dir, yaw_dir);
 
 void setup() {
   Serial.begin(115200);  // USB
@@ -121,13 +121,13 @@ void loop() {
       Serial.print('\t');
       if (crc_rx_calc == crc_rx) {
         // Command propulsion system and servo system
-        propsys.Drive(RXdata[0], RXdata[1], RXdata[2], RXdata[3], RXdata[4], RXdata[5]);
-        servos[0].Spin(RXdata[6]);
+        propsys.Drive(RXdata[1], RXdata[0], RXdata[3], 0, 0, RXdata[2]);
+        servos[0].Spin(RXdata[4]);
       }
     }
 
     // Print thruster status from Motor instance
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 7; i++) {
       Serial.print(thrusters[i].getSpeed());
       Serial.print('\t');
     }
