@@ -51,7 +51,6 @@ Motor servos[] = {
 // Define thrust vectors in rov frame for 45 degree motor config
 // length of thrust vectors == number of thrusters
 int x_dir[] = { 0, 0, 0, 0, 1, 1, 0 };
-
 int y_dir[] = { 0, 0, 0, 0, 0, 0, -1 };
 int z_dir[] = { 1, 1, 1, 1, 0, 0, 0 };
 int roll_dir[] = { 1, -1, 1, -1, 0, 0, 0 };
@@ -61,8 +60,8 @@ int yaw_dir[] = { 0, 0, 0, 0, -1, 1, 0 };
 PropulsionSystem propsys(7, thrusters, x_dir, y_dir, z_dir, roll_dir, pitch_dir, yaw_dir);
 
 void setup() {
-  Serial.begin(115200);  // USB
-  Serial3.begin(57600);  // arduino to arduino
+  Serial.begin(19200);  // USB
+  Serial1.begin(19200);  // arduino to arduino
 
   // Attach pins
   propsys.Attach();
@@ -75,26 +74,26 @@ void loop() {
 
     // Send data over serial with CRC
     crc1.restart();
-    Serial3.write((char*)&delimiter, sizeof(char));
+    Serial1.write((char*)&delimiter, sizeof(char));
     for (int i = 0; i < sizeof(TXdata) / sizeof(float); ++i) {
-      Serial3.write((const byte*)&TXdata[i], sizeof(float));
+      Serial1.write((const byte*)&TXdata[i], sizeof(float));
       crc1.add((byte*)&TXdata[i], sizeof(float));
     }
     crc_tx_calc = crc1.calc();
-    Serial3.write((byte*)&crc_tx_calc, sizeof(uint32_t));
+    Serial1.write((byte*)&crc_tx_calc, sizeof(uint32_t));
 
     // Receive data from serial with CRC validation
     crc2.restart();
-    while (Serial3.available()) {
-      char rx_start = Serial3.read();
+    while (Serial1.available()) {
+      char rx_start = Serial1.read();
       if (rx_start == delimiter) {
         for (int i = 0; i < sizeof(RXdata) / sizeof(byte); ++i) {
-          Serial3.readBytes((byte*)&RXdata[i], sizeof(byte));
+          Serial1.readBytes((byte*)&RXdata[i], sizeof(byte));
           crc2.add((byte*)&RXdata[i], sizeof(byte));
         }
       }
       crc_rx_calc = crc2.calc();
-      Serial3.readBytes((byte*)&crc_rx, sizeof(uint32_t));
+      Serial1.readBytes((byte*)&crc_rx, sizeof(uint32_t));
     }
 
     Serial.print("RX: ");

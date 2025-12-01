@@ -6,6 +6,7 @@ Submit pull request to:   Bob - bobchim@protonmail.com
 
 // this code is written and tested on arduino mega pro.
 
+#include <Wire.h>
 #include "CRC.h"
 
 #define DEBUG true
@@ -29,8 +30,8 @@ unsigned long t0 = 0;
 unsigned long dt = 100;   // loop "delay" time
 
 void setup() {
-  Serial.begin(115200);  // USB
-  Serial3.begin(57600);  // arduino to arduino
+  Serial.begin(19200);    // USB
+  Serial1.begin(19200);   // arduino to arduino
   pinMode(2, INPUT_PULLUP);
   pinMode(3, INPUT_PULLUP);
 }
@@ -60,21 +61,21 @@ void loop() {
     crc2.restart();
     crc2.add((byte*)&TXdata, sizeof(TXdata));
     crc_tx_calc = crc2.calc();
-    Serial3.write((char*)&delimiter, sizeof(char));
-    Serial3.write((byte*)&TXdata, sizeof(TXdata));
-    Serial3.write((byte*)&crc_tx_calc, sizeof(uint32_t));
+    Serial1.write((char*)&delimiter, sizeof(char));
+    Serial1.write((byte*)&TXdata, sizeof(TXdata));
+    Serial1.write((byte*)&crc_tx_calc, sizeof(uint32_t));
 
     // Receive data from serial with CRC validation
     crc1.restart();
-    while (Serial3.available()) {
-      char rx_start = Serial3.read();
+    while (Serial1.available()) {
+      char rx_start = Serial1.read();
       if (rx_start == delimiter) {
         for (int i = 0; i < sizeof(RXdata) / sizeof(float); ++i) {
-          Serial3.readBytes((byte*)&RXdata[i], sizeof(float));
+          Serial1.readBytes((byte*)&RXdata[i], sizeof(float));
           crc1.add((byte*)&RXdata[i], sizeof(float));
         }
         crc_rx_calc = crc1.calc();
-        Serial3.readBytes((byte*)&crc_rx, sizeof(uint32_t));
+        Serial1.readBytes((byte*)&crc_rx, sizeof(uint32_t));
       }
     }
 
